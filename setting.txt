@@ -1,0 +1,7 @@
+CREATE USER superset WITH PASSWORD 'superset';
+ALTER ROLE superset SET CLIENT_ENCODING TO 'utf8';
+ALTER ROLE superset SET TIMEZONE TO 'UTC';
+CREATE DATABASE superset;
+GRANT ALL PRIVILEGES ON DATABASE superset TO superset;
+ALTER DATABASE superset OWNER TO superset;
+

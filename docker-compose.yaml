@@ -1,0 +1,81 @@
+---
+version: '3.8'
+
+x-networks: &networks
+  - main-overlay-network
+x-env_file: &env_file ./superset.env
+x-restart: &restart unless-stopped
+
+
+x-superset-common:
+  &superset-common
+  image: apache/superset:2.0.1
+  user: 'root'
+  networks: *networks
+  env_file: *env_file
+  volumes:
+    - type: bind
+      source: ./entrypoint
+      target: /app/docker
+    - type: bind
+      source: ${APPS_DATA}/superset
+      target: /app/superset_home
+  # depends_on:
+  #   - db
+  #   - redis
+  restart: *restart
+
+
+
+services:
+
+  # redis:
+  #  image: redis:latest
+  #  container_name: superset_cache
+  #  networks: *networks
+  #  restart: *restart
+  #  volumes:
+  #    - redis:/data
+
+  # db:
+  #   image: postgres:10
+  #   container_name: superset_db
+  #   networks: *networks
+  #   restart: *restart
+  #   volumes:
+  #     - type: bind
+  #       source: ./postgres-data
+  #       target: /var/lib/postgresql/data
+  #   env_file: *env_file
+
+  superset:
+    <<: *superset-common
+    container_name: superset-app
+    command: ["/app/docker/docker-bootstrap.sh", "app-gunicorn"]
+    ports:
+      - target: 8088
+        published: 8088
+        mode: host
+
+  superset-init:
+    <<: *superset-common
+    container_name: superset-init
+    command: ["/app/docker/docker-init.sh"]
+    restart: 'no'
+
+  superset-worker:
+    <<: *superset-common
+    container_name: superset-worker
+    command: ["/app/docker/docker-bootstrap.sh", "worker"]
+
+  superset-worker-beat:
+    <<: *superset-common
+    container_name: superset-worker-beat
+    command: ["/app/docker/docker-bootstrap.sh", "beat"]
+
+
+networks:
+  main-overlay-network:
+    external: true
+    driver: overlay
+    attachable: true
