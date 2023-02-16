@@ -7,15 +7,15 @@ x-superset-common:
   image: apache/superset:2.0.1
   user: 'root'
   networks:
-    - main-network
+    - main-overlay-network
   env_file: 
-    - ./superset.env
+    - ${APPS_ENV}/superset.env
   volumes:
     - type: bind
       source: ./entrypoint
       target: /app/docker
-    - type: volume
-      source: superset-volume
+    - type: bind
+      source: ${APPS_DATA}/superset
       target: /app/superset_home
   healthcheck:
     disable: true
@@ -51,12 +51,7 @@ services:
 
 
 networks:
-  main-network:
-    name: main-network
-    external: false
-    driver: bridge
-    attachable: false
-
-
-volumes:
-  superset-volume:
+  main-overlay-network:
+    external: true
+    driver: overlay
+    attachable: true
