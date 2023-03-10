@@ -6,6 +6,7 @@ x-superset-common:
   &superset-common
   image: apache/superset:2.0.1
   user: 'root'
+  hostname: superset
   networks:
     - main-overlay-network
   env_file: 
