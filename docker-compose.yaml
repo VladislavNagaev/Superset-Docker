@@ -6,7 +6,6 @@ x-superset-common:
   &superset-common
   image: apache/superset:2.0.1
   user: 'root'
-  hostname: superset
   networks:
     - main-network
   env_file: 
@@ -28,6 +27,7 @@ services:
   superset-app:
     <<: *superset-common
     container_name: superset-app
+    hostname: superset-app
     command: ["/app/docker/docker-bootstrap.sh", "app-gunicorn"]
     ports:
       - target: 8088
@@ -37,17 +37,20 @@ services:
   superset-init:
     <<: *superset-common
     container_name: superset-init
+    hostname: superset-init
     command: ["/app/docker/docker-init.sh"]
     restart: 'no'
 
   superset-worker:
     <<: *superset-common
     container_name: superset-worker
+    hostname: superset-worker
     command: ["/app/docker/docker-bootstrap.sh", "worker"]
 
   superset-worker-beat:
     <<: *superset-common
     container_name: superset-worker-beat
+    hostname: superset-worker-beat
     command: ["/app/docker/docker-bootstrap.sh", "beat"]
 
 
