@@ -4,25 +4,9 @@
 
 To run superset, you first need to run [postgres](https://github.com/VladislavNagaev/Postgres-Docker) and [redis](https://github.com/VladislavNagaev/Redis-Docker) containers.
 
-Create database for superset:
+Prepare postgres DB:
 ~~~
-# open postgres container
-docker exec -it postgres bash
-
-# run psql
-psql --username=postgres --dbname=postgres
-
-# create user and db
-CREATE USER superset WITH PASSWORD 'superset';
-CREATE DATABASE superset;
-GRANT ALL PRIVILEGES ON DATABASE superset TO superset;
-ALTER DATABASE superset OWNER TO superset;
-
-# exit from psql
-exit
-
-# exit from container
-exit
+cat ./initdb.sql | docker exec -i postgres psql --username=postgres --dbname=postgres
 ~~~
 
 Depoyment of containers:
